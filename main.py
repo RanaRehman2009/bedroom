@@ -1,9 +1,5 @@
 import speech_recognition as sr
-import pyttsx3
-import pywhatkit
-import datetime
-import wikipedia
-import pyjokes
+import pyttsx3,pywhatkit,datetime,wikipedia,pyjokes,webbrowser,pyautogui
 
 listener = sr.Recognizer()
 engine = pyttsx3.init()
@@ -21,6 +17,7 @@ def take_command():
         with sr.Microphone() as source:
             print('listening...')
             voice = listener.listen(source)
+            global command
             command = listener.recognize_google(voice)
             command = command.lower()
             if 'alexa' in command:
@@ -34,27 +31,31 @@ def take_command():
 def run_alexa():
     command = take_command()
     print(command)
-    if 'youtube' in command:
-        song = command.replace('play', '')
+    if 'video search' in command: 
+        song = command.replace('video search', '')
+        song = song.replace('', '+')
         talk('playing ' + song)
-        pywhatkit.playonyt(song)
+        webbrowser.open(f"https://www.youtube.com/results?search_query={song}")
     elif 'time' in command:
         time = datetime.datetime.now().strftime('%I:%M %p')
         talk('Current time is ' + time)
-    elif 'who is' in command:
-        person = command.replace('who the heck is', '')
+    elif 'bob who is' in command:
+        person = command.replace('bob who is', '')
         info = wikipedia.summary(person, 1)
         print(info)
         talk(info)
     elif 'date' in command:
-        talk('sorry, I have a headache')
-    elif 'are you single' in command:
-        talk('I am in a relationship with wifi')
+        time = datetime.datetime.now().strftime('%Y-%m-%d')
+        talk(f'The date is {time}')
     elif 'joke' in command:
         talk(pyjokes.get_joke())
+    elif 'play' in command:
+        pyautogui.press('playpause')
+    elif 'pause' in command:
+        pyautogui.press('playpause')
+    elif 'exit' in command:
+        exit()
     else:
-        talk('Please say the command again.')
-
-
+        pass
 while True:
     run_alexa()
